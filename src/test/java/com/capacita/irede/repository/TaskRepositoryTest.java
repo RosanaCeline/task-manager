@@ -17,11 +17,18 @@ class TaskRepositoryTest {
 
     private TaskRepository taskRepository;
 
+    /**
+     * Configura o repositório utilizando a conexão com o banco de testes.
+     */
     @BeforeEach
     void configurar() throws Exception {
         taskRepository = new TaskRepository(ConexaoTeste::conectar);
     }
 
+    /**
+     * Limpa os registros do banco de testes após cada execução,
+     * garantindo o isolamento entre os testes.
+     */
     @AfterEach
     void finalizar() throws Exception {
         try (Connection conexao = ConexaoTeste.conectar();
@@ -31,6 +38,9 @@ class TaskRepositoryTest {
         }
     }
 
+    /**
+     * Verifica se a conexão com o banco de testes é estabelecida corretamente.
+     */
     @Test
     void deveConectarAoBancoDeDados() throws Exception {
         try (Connection conexao = ConexaoTeste.conectar()) {
@@ -39,6 +49,9 @@ class TaskRepositoryTest {
         }
     }
 
+    /**
+     * Verifica se uma tarefa é inserida no banco e recebe um identificador.
+     */
     @Test
     void deveAdicionarTarefaAoBanco() throws Exception {
 
@@ -53,6 +66,10 @@ class TaskRepositoryTest {
         assertTrue(tarefa.getId() > 0);
     }
 
+    /**
+     * Verifica se as tarefas cadastradas são recuperadas corretamente,
+     * preservando seus dados e estado de conclusão.
+     */
     @Test
     void deveListarTarefasSalvasNoBanco() throws Exception {
 
@@ -78,6 +95,10 @@ class TaskRepositoryTest {
         assertFalse(tarefaRecuperada.isConcluida());
     }
 
+    /**
+     * Verifica se a conclusão de uma tarefa é persistida corretamente
+     * e recuperada com o estado atualizado.
+     */
     @Test
     void deveConcluirTarefaNoBanco() throws Exception {
 
@@ -97,6 +118,9 @@ class TaskRepositoryTest {
         assertTrue(tarefaRecuperada.isConcluida());
     }
 
+    /**
+     * Verifica se uma tarefa é removida do banco de dados com sucesso.
+     */
     @Test
     void deveRemoverTarefaDoBanco() throws Exception {
 
@@ -115,6 +139,10 @@ class TaskRepositoryTest {
         assertTrue(tarefas.isEmpty());
     }
 
+    /**
+     * Verifica se uma subtarefa é cadastrada e recuperada com
+     * seu vínculo corretamente associado à tarefa principal.
+     */
     @Test
     void deveAdicionarSubtarefaVinculadaATarefaPrincipal() throws Exception {
 
@@ -152,6 +180,10 @@ class TaskRepositoryTest {
         );
     }
 
+    /**
+     * Verifica se a remoção de uma tarefa principal também exclui
+     * suas subtarefas vinculadas.
+     */
     @Test
     void deveRemoverSubtarefasAoRemoverTarefaPrincipal() throws Exception {
 
@@ -178,6 +210,10 @@ class TaskRepositoryTest {
         assertTrue(tarefas.isEmpty());
     }
 
+    /**
+     * Verifica se uma subtarefa pode ser removida individualmente,
+     * sem excluir sua tarefa principal.
+     */
     @Test
     void deveRemoverSubtarefaSemRemoverTarefaPrincipal() throws Exception {
 
@@ -205,6 +241,10 @@ class TaskRepositoryTest {
         assertTrue(tarefas.get(0).getSubtarefas().isEmpty());
     }
 
+    /**
+     * Verifica se a tentativa de remover uma tarefa não cadastrada
+     * retorna false.
+     */
     @Test
     void naoDeveRemoverTarefaInexistente() throws Exception {
 
@@ -218,6 +258,10 @@ class TaskRepositoryTest {
         assertFalse(removida);
     }
 
+    /**
+     * Verifica se a consulta retorna uma lista vazia
+     * quando não existem tarefas cadastradas.
+     */
     @Test
     void deveRetornarListaVaziaQuandoNaoExistiremTarefas() throws Exception {
 

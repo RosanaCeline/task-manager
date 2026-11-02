@@ -1,4 +1,3 @@
-
 package com.capacita.irede.repository;
 
 import com.capacita.irede.dao.Conexao;
@@ -15,17 +14,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Implementa as operações de persistência de tarefas no banco de dados MySQL,
+ * incluindo o gerenciamento de tarefas principais e subtarefas.
+ */
 public class TaskRepository implements Repository<Task> {
     private final FabricaConexao fabricaConexao;
 
+    /**
+     * Inicializa o repositório utilizando a fábrica de conexão padrão da aplicação.
+     */
     public TaskRepository() {
         this(Conexao::conectar);
     }
 
+    /**
+     * Inicializa o repositório recebendo uma fábrica de conexões,
+     * permitindo utilizar diferentes bancos de dados.
+     *
+     * @param fabricaConexao responsável por fornecer conexões com o banco
+     */
     public TaskRepository(FabricaConexao fabricaConexao) {
         this.fabricaConexao = fabricaConexao;
     }
 
+    /**
+     * Insere uma tarefa no banco de dados, recupera seu identificador
+     * gerado e, quando necessário, estabelece seu vínculo com a tarefa principal.
+     *
+     * @param task tarefa a ser cadastrada
+     * @throws SQLException caso ocorra um erro na operação com o banco
+     * @throws TaskTitleTooLongException caso o título ultrapasse o limite permitido
+     */
     @Override
     public void adicionar(Task task) throws SQLException, TaskTitleTooLongException {
 
@@ -70,6 +90,13 @@ public class TaskRepository implements Repository<Task> {
         }
     }
 
+    /**
+     * Consulta as tarefas armazenadas no banco e reconstrói sua hierarquia,
+     * associando cada subtarefa à respectiva tarefa principal.
+     *
+     * @return lista de tarefas principais com suas subtarefas
+     * @throws SQLException caso ocorra um erro na consulta
+     */
     @Override
     public List<Task> getTarefas() throws SQLException {
         String sql = """
@@ -136,6 +163,13 @@ public class TaskRepository implements Repository<Task> {
         return tarefas;
     }
 
+    /**
+     * Atualiza o estado de conclusão da tarefa no banco de dados
+     * e atualiza o objeto correspondente em memória.
+     *
+     * @param task tarefa que será marcada como concluída
+     * @throws SQLException caso ocorra um erro na atualização
+     */
     @Override
     public void concluir(Task task) throws SQLException {
         String sql = """
@@ -156,6 +190,13 @@ public class TaskRepository implements Repository<Task> {
         }
     }
 
+    /**
+     * Remove uma tarefa do banco de dados utilizando seu identificador.
+     *
+     * @param task tarefa a ser removida
+     * @return true se alguma linha foi removida; false caso contrário
+     * @throws SQLException caso ocorra um erro na exclusão
+     */
     @Override
     public boolean remover(Task task) throws SQLException {
 
@@ -174,7 +215,14 @@ public class TaskRepository implements Repository<Task> {
         }
     }
 
-    // Cria uma tarefa principal a partir dos dados do banco
+    /**
+     * Constrói um objeto Task a partir dos dados recuperados do banco,
+     * restaurando seu identificador e estado de conclusão.
+     *
+     * @param registro registro contendo os dados da tarefa
+     * @return tarefa reconstruída
+     * @throws SQLException caso os dados não permitam criar a tarefa
+     */
     private Task criarTask(TaskRow registro) throws SQLException {
         try {
             Task task = new Task(registro.titulo(), registro.descricao());
@@ -189,7 +237,10 @@ public class TaskRepository implements Repository<Task> {
         }
     }
 
-    // Representa temporariamente os registros recuperados do banco
+    /**
+     * Representa os dados de uma tarefa recuperados do banco de dados,
+     * incluindo o identificador da tarefa principal quando existente.
+     */
     private record TaskRow(
             Long id,
             String titulo,

@@ -1,4 +1,3 @@
-
 package com.capacita.irede.model;
 
 import com.capacita.irede.exceptions.TitleEmptyOrNullException;
@@ -12,18 +11,25 @@ class TaskTest {
 
     private Task task;
 
-    // Executado antes de cada teste
+    /**
+     * Inicializa uma tarefa padrão antes da execução de cada teste.
+     */
     @BeforeEach
     void setUp() {
         task = new Task("Estudar Java", "Revisar orientação a objetos");
     }
 
-    // Executado depois de cada teste
+    /**
+     * Limpa a referência da tarefa após a execução de cada teste.
+     */
     @AfterEach
     void tearDown() {
         task = null;
     }
 
+    /**
+     * Verifica se uma tarefa é criada corretamente com título e descrição.
+     */
     @Test
     void deveCriarTarefaComSucesso() {
         assertNotNull(task);
@@ -31,11 +37,17 @@ class TaskTest {
         assertEquals("Revisar orientação a objetos", task.getDescricao());
     }
 
+    /**
+     * Verifica se uma nova tarefa é inicializada com o estado pendente.
+     */
     @Test
     void tarefaDeveIniciarComoPendente() {
         assertFalse(task.isConcluida());
     }
 
+    /**
+     * Verifica se uma tarefa pode ser marcada como concluída.
+     */
     @Test
     void devePermitirConcluirTarefa() {
         task.setConcluida(true);
@@ -43,6 +55,9 @@ class TaskTest {
         assertTrue(task.isConcluida());
     }
 
+    /**
+     * Verifica se uma tarefa concluída pode voltar ao estado pendente.
+     */
     @Test
     void devePermitirReabrirTarefa() {
         task.setConcluida(true);
@@ -51,6 +66,9 @@ class TaskTest {
         assertFalse(task.isConcluida());
     }
 
+    /**
+     * Verifica se espaços extras no início e no final do título são removidos.
+     */
     @Test
     void deveRemoverEspacosExtrasDoTitulo() {
         Task novaTask = new Task("  estudar java  ", "Descrição");
@@ -58,6 +76,9 @@ class TaskTest {
         assertEquals("Estudar java", novaTask.getTitulo());
     }
 
+    /**
+     * Verifica se a criação de uma tarefa com título nulo gera uma exceção.
+     */
     @Test
     void deveRejeitarTituloNulo() {
         assertThrows(
@@ -66,6 +87,9 @@ class TaskTest {
         );
     }
 
+    /**
+     * Verifica se a criação de uma tarefa com título vazio gera uma exceção.
+     */
     @Test
     void deveRejeitarTituloVazio() {
         assertThrows(
@@ -74,6 +98,9 @@ class TaskTest {
         );
     }
 
+    /**
+     * Verifica se títulos contendo apenas espaços são rejeitados.
+     */
     @Test
     void deveRejeitarTituloComApenasEspacos() {
         assertThrows(
@@ -82,6 +109,9 @@ class TaskTest {
         );
     }
 
+    /**
+     * Verifica se uma descrição nula é aceita e armazenada como string vazia.
+     */
     @Test
     void devePermitirDescricaoNula() {
         Task novaTask = new Task("Estudar Java", null);
@@ -89,6 +119,10 @@ class TaskTest {
         assertEquals("", novaTask.getDescricao());
     }
 
+    /**
+     * Verifica se uma subtarefa é adicionada corretamente e mantém
+     * o vínculo com sua tarefa principal.
+     */
     @Test
     void deveAdicionarSubtarefa() {
         TaskPrioritaria subtarefa = new TaskPrioritaria(

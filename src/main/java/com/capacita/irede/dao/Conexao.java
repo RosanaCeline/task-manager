@@ -9,6 +9,12 @@ public class Conexao {
     private static final String USER = "taskmanager_user";
     private static final String PASSWORD = "taskmanager123";
 
+    /**
+     * Estabelece e retorna uma conexão com o banco de dados MySQL.
+     *
+     * @return conexão ativa com o banco de dados
+     * @throws SQLException caso ocorra um erro ao estabelecer a conexão
+     */
     public static Connection conectar() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }

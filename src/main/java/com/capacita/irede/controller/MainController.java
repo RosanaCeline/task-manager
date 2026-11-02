@@ -26,8 +26,6 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 public class MainController {
-
-    // ===== Componentes do FXML (os nomes precisam ser iguais aos fx:id) =====
     @FXML private CheckBox chkApenasPendentes;
     @FXML private TreeView<Task> treeTarefas;
     @FXML private Button btnConcluir;
@@ -43,11 +41,17 @@ public class MainController {
 
     private final TaskRepository taskRepository = new TaskRepository();
 
-    // Chamado automaticamente pelo JavaFX depois de carregar o FXML
+    /**
+     * Inicializa os componentes da interface, configura seus comportamentos
+     * e carrega as tarefas armazenadas no banco de dados.
+     */
     @FXML
     public void initialize() throws SQLException {
-        // Como cada tarefa aparece na árvore
         treeTarefas.setCellFactory(tv -> new TreeCell<>() {
+
+            /**
+             * Atualiza a apresentação de cada tarefa na árvore, destacando seu estado de conclusão e sua descrição.
+             */
             @Override
             protected void updateItem(Task task, boolean empty) {
                 super.updateItem(task, empty);
@@ -60,7 +64,7 @@ public class MainController {
 
                     String descricao = task.getDescricao();
                     if (descricao != null && !descricao.isBlank()) {
-                        texto += "\n    " + descricao;   // descrição na linha de baixo
+                        texto += "\n    " + descricao;
                     }
 
                     setText(texto);
@@ -71,7 +75,6 @@ public class MainController {
             }
         });
 
-        // Como cada tarefa aparece no ComboBox
         cbTarefaPai.setConverter(new StringConverter<>() {
             @Override
             public String toString(Task task) {
@@ -84,10 +87,8 @@ public class MainController {
             }
         });
 
-        // ComboBox só habilitado quando "Subtarefa" estiver marcada
         cbTarefaPai.disableProperty().bind(rbSubtarefa.selectedProperty().not());
 
-        // Botão só habilitado quando há um título válido (campo obrigatório)
         btnAdicionar.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> txtTitulo.getText().isBlank()
                         || (rbSubtarefa.isSelected() && cbTarefaPai.getValue() == null),
@@ -95,7 +96,6 @@ public class MainController {
                 rbSubtarefa.selectedProperty(),
                 cbTarefaPai.valueProperty()));
 
-        // Botões só habilitados quando há uma tarefa selecionada
         btnConcluir.disableProperty().bind(
                 treeTarefas.getSelectionModel().selectedItemProperty().isNull());
         btnRemover.disableProperty().bind(
@@ -104,7 +104,10 @@ public class MainController {
         listarTarefas();
     }
 
-    // Botão "Adicionar"
+    /**
+     * Cria uma tarefa principal ou uma subtarefa, salva no banco de dados
+     * e atualiza a interface após a operação.
+     */
     @FXML
     public void criarTarefa() {
         String titulo = txtTitulo.getText();
@@ -120,13 +123,9 @@ public class MainController {
                 }
 
                 TaskPrioritaria subtarefa = new TaskPrioritaria(titulo, descricao, pai);
-
-                // Salva a subtarefa no banco de dados
                 taskRepository.adicionar(subtarefa);
 
-                mostrarStatus("Subtarefa '" + subtarefa.getTitulo()
-                        + "' adicionada à tarefa '" + pai.getTitulo() + "'.");
-
+                mostrarStatus("Subtarefa '" + subtarefa.getTitulo() + "' adicionada à tarefa '" + pai.getTitulo() + "'.");
             } else {
                 Task task = new Task(titulo, descricao);
                 taskRepository.adicionar(task);
@@ -136,20 +135,20 @@ public class MainController {
 
             limparFormulario();
             listarTarefas();
-
         } catch (TaskTitleTooLongException e) {
             mostrarStatus(e.getMessage());
-
         } catch (TitleEmptyOrNullException e) {
             mostrarStatus("Erro ao salvar tarefa: " + e.getMessage());
-
         } catch (SQLException e) {
             mostrarStatus("Erro ao acessar o banco de dados.");
             e.printStackTrace();
         }
     }
 
-    // Atualiza a árvore (também é chamado pelo checkbox "Mostrar apenas pendentes")
+    /**
+     * Recupera as tarefas do banco de dados e atualiza a árvore
+     * e a lista de tarefas principais disponíveis para seleção.
+     */
     @FXML
     public void listarTarefas() throws SQLException {
         boolean apenasPendentes = chkApenasPendentes.isSelected();
@@ -162,12 +161,13 @@ public class MainController {
             }
         }
         treeTarefas.setRoot(raiz);
-
-        // O ComboBox sempre lista todas as tarefas principais, independente do filtro
         cbTarefaPai.setItems(FXCollections.observableArrayList(taskRepository.getTarefas()));
     }
 
-    // Botão "Marcar como concluída"
+    /**
+     * Marca como concluída a tarefa selecionada, atualiza o banco de dados
+     * e recarrega a lista apresentada na interface.
+     */
     @FXML
     public void concluirTarefa() throws SQLException {
         TreeItem<Task> selecionado = treeTarefas.getSelectionModel().getSelectedItem();
@@ -183,7 +183,10 @@ public class MainController {
         listarTarefas();
     }
 
-    // Botão "Remover"
+    /**
+     * Solicita a confirmação do usuário antes de remover a tarefa selecionada
+     * e atualiza a árvore após a exclusão.
+     */
     @FXML
     public void removerTarefa() throws SQLException {
         TreeItem<Task> selecionado = treeTarefas.getSelectionModel().getSelectedItem();
@@ -213,7 +216,14 @@ public class MainController {
 
     // ===== Métodos auxiliares =====
 
-    // Monta o item da árvore com as subtarefas dentro (recursivo)
+    /**
+     * Cria recursivamente os itens da árvore, organizando as subtarefas
+     * e aplicando o filtro de tarefas pendentes quando solicitado.
+     *
+     * @param task tarefa que será representada na árvore
+     * @param apenasPendentes indica se tarefas concluídas devem ser ocultadas
+     * @return item da árvore ou null quando a tarefa não deve ser exibida
+     */
     private TreeItem<Task> criarItem(Task task, boolean apenasPendentes) {
         TreeItem<Task> item = new TreeItem<>(task);
         item.setExpanded(true);
@@ -225,17 +235,24 @@ public class MainController {
             }
         }
 
-        // Com o filtro ligado, esconde tarefas concluídas (a não ser que tenham subtarefa pendente)
         boolean visivel = !apenasPendentes || !task.isConcluida() || !item.getChildren().isEmpty();
         return visivel ? item : null;
     }
 
+    /**
+     * Limpa os campos do formulário e devolve o foco ao campo de título.
+     */
     private void limparFormulario() {
         txtTitulo.clear();
         txtDescricao.clear();
         txtTitulo.requestFocus();
     }
 
+    /**
+     * Exibe uma mensagem de retorno ao usuário na área de status da interface.
+     *
+     * @param mensagem texto que será apresentado
+     */
     private void mostrarStatus(String mensagem) {
         lblStatus.setText(mensagem);
     }

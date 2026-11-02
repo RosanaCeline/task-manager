@@ -12,6 +12,13 @@ public class ConexaoTeste {
     private static final String USER = "taskmanager_user";
     private static final String PASSWORD = "taskmanager123";
 
+    /**
+     * Estabelece e retorna uma conexão com o banco de dados
+     * utilizado exclusivamente nos testes.
+     *
+     * @return conexão com o banco de testes
+     * @throws SQLException caso ocorra um erro ao estabelecer a conexão
+     */
     public static Connection conectar() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
