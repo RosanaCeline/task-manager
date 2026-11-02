@@ -14,3 +14,6 @@ CREATE TABLE IF NOT EXISTS tarefas (
         REFERENCES tarefas(id)
         ON DELETE CASCADE
 );
+
+GRANT ALL PRIVILEGES ON task_manager.*
+TO 'taskmanager_user'@'localhost';

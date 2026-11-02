@@ -2,6 +2,7 @@
 package com.capacita.irede.repository;
 
 import com.capacita.irede.dao.Conexao;
+import com.capacita.irede.dao.FabricaConexao;
 import com.capacita.irede.exceptions.TaskTitleTooLongException;
 import com.capacita.irede.exceptions.TitleEmptyOrNullException;
 import com.capacita.irede.model.Task;
@@ -15,6 +16,15 @@ import java.util.List;
 import java.util.Map;
 
 public class TaskRepository implements Repository<Task> {
+    private final FabricaConexao fabricaConexao;
+
+    public TaskRepository() {
+        this(Conexao::conectar);
+    }
+
+    public TaskRepository(FabricaConexao fabricaConexao) {
+        this.fabricaConexao = fabricaConexao;
+    }
 
     @Override
     public void adicionar(Task task) throws SQLException, TaskTitleTooLongException {
@@ -24,7 +34,7 @@ public class TaskRepository implements Repository<Task> {
             VALUES (?, ?, ?, ?)
             """;
 
-        try (Connection conexao = Conexao.conectar();
+        try (Connection conexao = fabricaConexao.abrir();
              PreparedStatement stmt = conexao.prepareStatement(
                      sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -71,7 +81,7 @@ public class TaskRepository implements Repository<Task> {
         List<Task> tarefas = new ArrayList<>();
         Map<Long, Task> tarefasPorId = new HashMap<>();
 
-        try (Connection conexao = Conexao.conectar();
+        try (Connection conexao = fabricaConexao.abrir();
              PreparedStatement stmt = conexao.prepareStatement(sql);
              ResultSet resultado = stmt.executeQuery()) {
 
@@ -134,7 +144,7 @@ public class TaskRepository implements Repository<Task> {
                 WHERE id = ?
                 """;
 
-        try (Connection conexao = Conexao.conectar();
+        try (Connection conexao = fabricaConexao.abrir();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
             stmt.setBoolean(1, true);
@@ -148,9 +158,14 @@ public class TaskRepository implements Repository<Task> {
 
     @Override
     public boolean remover(Task task) throws SQLException {
+
+        if (task == null || task.getId() == null) {
+            return false;
+        }
+
         String sql = "DELETE FROM tarefas WHERE id = ?";
 
-        try (Connection conexao = Conexao.conectar();
+        try (Connection conexao = fabricaConexao.abrir();
              PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
             stmt.setLong(1, task.getId());
