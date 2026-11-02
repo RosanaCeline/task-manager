@@ -5,6 +5,7 @@ import com.capacita.irede.exceptions.TitleEmptyOrNullException;
 import java.util.ArrayList;
 
 public class Task {
+    private Long id;
     private String titulo;
     private String descricao;
     private boolean concluida;
@@ -14,6 +15,14 @@ public class Task {
         setTitulo(titulo);
         setDescricao(descricao);
         this.concluida = false;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitulo() {

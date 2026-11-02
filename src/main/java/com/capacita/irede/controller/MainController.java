@@ -1,8 +1,10 @@
 package com.capacita.irede.controller;
 
+import com.capacita.irede.exceptions.TaskTitleTooLongException;
 import com.capacita.irede.exceptions.TitleEmptyOrNullException;
 import com.capacita.irede.model.Task;
 import com.capacita.irede.model.TaskPrioritaria;
+import com.capacita.irede.repository.TaskRepository;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -20,6 +22,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.util.StringConverter;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 public class MainController {
@@ -38,12 +41,11 @@ public class MainController {
     @FXML private Label lblStatus;
     @FXML private Button btnAdicionar;
 
-    // Reaproveita a sua classe de lógica
-    private final TaskManager<Task> taskManager = new TaskManager<>();
+    private final TaskRepository taskRepository = new TaskRepository();
 
     // Chamado automaticamente pelo JavaFX depois de carregar o FXML
     @FXML
-    public void initialize() {
+    public void initialize() throws SQLException {
         // Como cada tarefa aparece na árvore
         treeTarefas.setCellFactory(tv -> new TreeCell<>() {
             @Override
@@ -118,30 +120,42 @@ public class MainController {
                 }
 
                 TaskPrioritaria subtarefa = new TaskPrioritaria(titulo, descricao, pai);
-                pai.adicionarSubtarefa(subtarefa);
+
+                // Salva a subtarefa no banco de dados
+                taskRepository.adicionar(subtarefa);
+
                 mostrarStatus("Subtarefa '" + subtarefa.getTitulo()
                         + "' adicionada à tarefa '" + pai.getTitulo() + "'.");
+
             } else {
                 Task task = new Task(titulo, descricao);
-                taskManager.adicionar(task);
+                taskRepository.adicionar(task);
+
                 mostrarStatus("Tarefa '" + task.getTitulo() + "' adicionada com sucesso!");
             }
 
             limparFormulario();
             listarTarefas();
 
+        } catch (TaskTitleTooLongException e) {
+            mostrarStatus(e.getMessage());
+
         } catch (TitleEmptyOrNullException e) {
             mostrarStatus("Erro ao salvar tarefa: " + e.getMessage());
+
+        } catch (SQLException e) {
+            mostrarStatus("Erro ao acessar o banco de dados.");
+            e.printStackTrace();
         }
     }
 
     // Atualiza a árvore (também é chamado pelo checkbox "Mostrar apenas pendentes")
     @FXML
-    public void listarTarefas() {
+    public void listarTarefas() throws SQLException {
         boolean apenasPendentes = chkApenasPendentes.isSelected();
 
         TreeItem<Task> raiz = new TreeItem<>();
-        for (Task task : taskManager.getTarefas()) {
+        for (Task task : taskRepository.getTarefas()) {
             TreeItem<Task> item = criarItem(task, apenasPendentes);
             if (item != null) {
                 raiz.getChildren().add(item);
@@ -150,12 +164,12 @@ public class MainController {
         treeTarefas.setRoot(raiz);
 
         // O ComboBox sempre lista todas as tarefas principais, independente do filtro
-        cbTarefaPai.setItems(FXCollections.observableArrayList(taskManager.getTarefas()));
+        cbTarefaPai.setItems(FXCollections.observableArrayList(taskRepository.getTarefas()));
     }
 
     // Botão "Marcar como concluída"
     @FXML
-    public void concluirTarefa() {
+    public void concluirTarefa() throws SQLException {
         TreeItem<Task> selecionado = treeTarefas.getSelectionModel().getSelectedItem();
 
         if (selecionado == null) {
@@ -164,14 +178,14 @@ public class MainController {
         }
 
         Task task = selecionado.getValue();
-        taskManager.concluir(task);
+        taskRepository.concluir(task);
         mostrarStatus("'" + task.getTitulo() + "' concluída!");
         listarTarefas();
     }
 
     // Botão "Remover"
     @FXML
-    public void removerTarefa() {
+    public void removerTarefa() throws SQLException {
         TreeItem<Task> selecionado = treeTarefas.getSelectionModel().getSelectedItem();
 
         if (selecionado == null) {
@@ -191,13 +205,7 @@ public class MainController {
             return;
         }
 
-        TreeItem<Task> paiItem = selecionado.getParent();
-
-        if (paiItem == treeTarefas.getRoot()) {
-            taskManager.remover(task);                        // tarefa principal
-        } else {
-            paiItem.getValue().getSubtarefas().remove(task);  // subtarefa
-        }
+        taskRepository.remover(task);
 
         mostrarStatus("'" + task.getTitulo() + "' removida.");
         listarTarefas();
