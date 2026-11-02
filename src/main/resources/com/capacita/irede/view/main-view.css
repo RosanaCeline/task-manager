@@ -1,0 +1,102 @@
+.root-pane {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 13px;
+}
+
+/* ===== Painéis ===== */
+.painel-lista {
+    -fx-background-color: transparent;
+}
+
+.painel-formulario {
+    -fx-background-color: white;
+    -fx-border-color: #d1d5db;
+    -fx-border-width: 0 0 0 1;
+}
+
+/* ===== Títulos ===== */
+.titulo-secao {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: '#1f2937';
+}
+
+/* ===== Campos de entrada ===== */
+.text-field,
+.text-area,
+.combo-box {
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-border-color: '#d1d5db';
+}
+
+.text-field:focused,
+.text-area:focused,
+.combo-box:focused {
+    -fx-border-color: '#3b82f6';
+}
+
+/* ===== TreeView (lista de tarefas) ===== */
+.tree-view {
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-border-color: '#d1d5db';
+}
+
+.tree-cell {
+    -fx-padding: 6 8 6 8;
+}
+
+.tree-cell:selected {
+    -fx-background-color: '#3b82f6';
+    -fx-text-fill: white;
+}
+
+.tarefa-concluida {
+    -fx-text-fill: #9ca3af;
+}
+
+/* ===== Botões ===== */
+.button {
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+    -fx-padding: 6 14 6 14;
+}
+
+.btn-adicionar {
+    -fx-background-color: '#0D214F';
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.btn-concluir {
+    -fx-background-color: '#008000';
+    -fx-text-fill: white;
+}
+
+.btn-remover {
+    -fx-background-color: '#FF2C2C';
+    -fx-text-fill: white;
+}
+
+.btn-adicionar:hover,
+.btn-concluir:hover,
+.btn-remover:hover {
+    -fx-opacity: 0.85;
+}
+
+.button:disabled {
+    -fx-opacity: 0.5;
+}
+
+/* ===== Barra de status ===== */
+.barra-status {
+    -fx-background-color: white;
+    -fx-border-color: '#d1d5db';
+    -fx-border-width: 1 0 0 0;
+}
+
+.barra-status .label {
+    -fx-text-fill: '#6b7280';
+    -fx-font-size: 12px;
+}

@@ -34,7 +34,7 @@ public class Task {
     }
 
     public void setDescricao(String descricao) {
-        if (descricao != null) {
+        if (descricao != null && !descricao.isBlank()) {
             String tratado = descricao.trim();
 
             this.descricao = tratado.substring(0, 1).toUpperCase() + tratado.substring(1);

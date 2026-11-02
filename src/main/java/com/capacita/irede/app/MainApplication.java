@@ -10,6 +10,9 @@ public class MainApplication extends Application {
     public void start(Stage stage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("/com/capacita/irede/view/main-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 500);
+        scene.getStylesheets().add(
+                MainApplication.class.getResource("/com/capacita/irede/view/main-view.css").toExternalForm()
+        );
         stage.setTitle("Gerenciador de Tarefas");
         stage.setScene(scene);
         stage.show();

@@ -1,20 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<BorderPane fx:controller="com.capacita.irede.controller.MainController" styleClass="root-pane" stylesheets="@main-view.css" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+    <center>
+        <VBox spacing="8.0" styleClass="painel-lista">
+            <padding>
+                <Insets top="15.0" right="10.0" bottom="10.0" left="15.0"/>
+            </padding>
+            <children>
+                <Label text="Minhas tarefas" styleClass="titulo-secao"/>
+                <CheckBox fx:id="chkApenasPendentes" text="Mostrar apenas pendentes" onAction="#listarTarefas"/>
+                <TreeView fx:id="treeTarefas" showRoot="false" VBox.vgrow="ALWAYS"/>
+                <HBox spacing="10.0" alignment="CENTER_RIGHT">
+                    <children>
+                        <Button fx:id="btnConcluir" text="Marcar como concluída" styleClass="btn-concluir" onAction="#concluirTarefa"/>
+                        <Button fx:id="btnRemover" text="Remover" styleClass="btn-remover" onAction="#removerTarefa"/>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </center>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
-   <top>
-      <MenuBar BorderPane.alignment="CENTER">
-          <menus>
-              <Menu text="Navegar">
-                  <MenuItem text="Criar Tarefa"/>
-                  <MenuItem text="Listar Tarefas"/>
-                  <SeparatorMenuItem/>
-                  <MenuItem text="Sair"/>
-              </Menu>
-          </menus>
-      </MenuBar>
-   </top>
+    <right>
+        <VBox spacing="8.0" prefWidth="260.0" styleClass="painel-formulario">
+            <padding>
+                <Insets top="15.0" right="15.0" bottom="10.0" left="10.0"/>
+            </padding>
+            <children>
+                <Label text="Nova tarefa" styleClass="titulo-secao"/>
+
+                <Label text="Tipo"/>
+                <HBox spacing="15.0">
+                    <children>
+                        <RadioButton fx:id="rbPrincipal" text="Principal" selected="true">
+                            <toggleGroup>
+                                <ToggleGroup fx:id="grupoTipo"/>
+                            </toggleGroup>
+                        </RadioButton>
+                        <RadioButton fx:id="rbSubtarefa" text="Subtarefa" toggleGroup="$grupoTipo"/>
+                    </children>
+                </HBox>
+
+                <Label text="Tarefa principal (para subtarefas)"/>
+                <ComboBox fx:id="cbTarefaPai" maxWidth="Infinity" promptText="Selecione..." disable="true"/>
+
+                <Label text="Título *"/>
+                <TextField fx:id="txtTitulo" promptText="Ex.: Estudar JavaFX"/>
+
+                <Label text="Descrição"/>
+                <TextArea fx:id="txtDescricao" prefRowCount="4" wrapText="true" promptText="Detalhes da tarefa (opcional)"/>
+
+                <Button fx:id="btnAdicionar" text="Adicionar" maxWidth="Infinity" defaultButton="true" styleClass="btn-adicionar" onAction="#criarTarefa"/>
+            </children>
+        </VBox>
+    </right>
+
+    <bottom>
+        <HBox styleClass="barra-status" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="6.0" right="15.0" bottom="6.0" left="15.0"/>
+            </padding>
+            <children>
+                <Label fx:id="lblStatus" text=""/>
+            </children>
+        </HBox>
+    </bottom>
 </BorderPane>
