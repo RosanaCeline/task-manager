@@ -1,11 +1,9 @@
 package com.capacita.irede.app;
 
-import com.capacita.irede.config.ConnectionConfig;
 import com.capacita.irede.controller.TaskManager;
 import com.capacita.irede.exceptions.TitleEmptyOrNullException;
 import com.capacita.irede.model.Task;
 import com.capacita.irede.model.TaskPrioritaria;
-
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
