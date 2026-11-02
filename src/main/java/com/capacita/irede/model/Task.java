@@ -4,13 +4,13 @@ import com.capacita.irede.exceptions.TitleEmptyOrNullException;
 
 import java.util.ArrayList;
 
-public class Tarefa {
+public class Task {
     private String titulo;
     private String descricao;
     private boolean concluida;
-    private final ArrayList<TarefaPrioritaria> subtarefas = new ArrayList<>();
+    private final ArrayList<TaskPrioritaria> subtarefas = new ArrayList<>();
 
-    public Tarefa(String titulo, String descricao) {
+    public Task(String titulo, String descricao) {
         setTitulo(titulo);
         setDescricao(descricao);
         this.concluida = false;
@@ -69,7 +69,7 @@ public class Tarefa {
                 .append(getDescricao());
 
         for (int i = 0; i < subtarefas.size(); i++) {
-            TarefaPrioritaria subtarefa = subtarefas.get(i);
+            TaskPrioritaria subtarefa = subtarefas.get(i);
 
             resultado.append("\n")
                     .append("    ".repeat(nivel + 1))
@@ -84,11 +84,11 @@ public class Tarefa {
         return resultado.toString();
     }
 
-    public void adicionarSubtarefa(TarefaPrioritaria subtarefa) {
+    public void adicionarSubtarefa(TaskPrioritaria subtarefa) {
         subtarefas.add(subtarefa);
     }
 
-    public ArrayList<TarefaPrioritaria> getSubtarefas() {
+    public ArrayList<TaskPrioritaria> getSubtarefas() {
         return subtarefas;
     }
 }

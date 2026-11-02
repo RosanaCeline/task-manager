@@ -1,7 +1,7 @@
 package com.capacita.irede.app;
 
 import com.capacita.irede.controller.TaskManager;
-import com.capacita.irede.model.Tarefa;
+import com.capacita.irede.model.Task;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        TaskManager<Tarefa> taskManager = new TaskManager<>();
+        TaskManager<Task> taskManager = new TaskManager<>();
 
         try {
             int opcao = 0;

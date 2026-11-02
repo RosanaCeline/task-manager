@@ -1,15 +1,15 @@
 package com.capacita.irede.controller;
 
 import com.capacita.irede.exceptions.TitleEmptyOrNullException;
-import com.capacita.irede.model.Tarefa;
-import com.capacita.irede.model.TarefaPrioritaria;
+import com.capacita.irede.model.Task;
+import com.capacita.irede.model.TaskPrioritaria;
 
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class TaskManager<T extends Tarefa> {
-    private final ArrayList<Tarefa> listaTarefas = new ArrayList<>();
+public class TaskManager<T extends Task> {
+    private final ArrayList<Task> listaTasks = new ArrayList<>();
 
     public void adicionarTarefa(Scanner sc) {
         try {
@@ -25,10 +25,10 @@ public class TaskManager<T extends Tarefa> {
                 System.out.println("Opção inválida!");
                 return;
             }
-            Tarefa tarefaPai = null;
+            Task taskPai = null;
 
             if (opcao == 2) {
-                if (listaTarefas.isEmpty()) {
+                if (listaTasks.isEmpty()) {
                     System.out.println("Não existem tarefas para associar como pai.");
                     return;
                 }
@@ -39,14 +39,14 @@ public class TaskManager<T extends Tarefa> {
                 int idPai = sc.nextInt();
                 sc.nextLine();
 
-                if (idPai < 1 || idPai > listaTarefas.size()) {
+                if (idPai < 1 || idPai > listaTasks.size()) {
                     System.out.println("Tarefa principal não encontrada!");
                     return;
                 }
 
-                tarefaPai = listaTarefas.get(idPai - 1);
+                taskPai = listaTasks.get(idPai - 1);
 
-                if (tarefaPai instanceof TarefaPrioritaria) {
+                if (taskPai instanceof TaskPrioritaria) {
                     System.out.println("Escolha uma tarefa principal, não uma subtarefa.");
                     return;
                 }
@@ -61,17 +61,17 @@ public class TaskManager<T extends Tarefa> {
             String descricao = sc.nextLine();
 
             if (opcao == 1) {
-                Tarefa tarefa = new Tarefa(titulo, descricao);
-                listaTarefas.add(tarefa);
+                Task task = new Task(titulo, descricao);
+                listaTasks.add(task);
 
-                System.out.println("Tarefa '" + tarefa.getTitulo() + "' adicionada com sucesso!");
+                System.out.println("Tarefa '" + task.getTitulo() + "' adicionada com sucesso!");
             } else {
-                TarefaPrioritaria subtarefa =
-                        new TarefaPrioritaria(titulo, descricao, tarefaPai);
+                TaskPrioritaria subtarefa =
+                        new TaskPrioritaria(titulo, descricao, taskPai);
 
-                tarefaPai.adicionarSubtarefa(subtarefa);
+                taskPai.adicionarSubtarefa(subtarefa);
 
-                System.out.println("Subtarefa '" + subtarefa.getTitulo() + "' adicionada à tarefa '" + tarefaPai.getTitulo() + "' com sucesso!");
+                System.out.println("Subtarefa '" + subtarefa.getTitulo() + "' adicionada à tarefa '" + taskPai.getTitulo() + "' com sucesso!");
             }
         } catch (TitleEmptyOrNullException e) {
             System.err.println("Erro ao salvar tarefa: " + e.getMessage());
@@ -84,13 +84,13 @@ public class TaskManager<T extends Tarefa> {
     public void listarTarefas() {
         System.out.println("\n===== LISTAR TAREFAS =====");
 
-        if(listaTarefas.isEmpty()) {
+        if(listaTasks.isEmpty()) {
             System.out.println("Lista de Tarefas vazia!");
             return;
         }
 
-        for (int i = 0; i < listaTarefas.size(); i++) {
-            System.out.println(listaTarefas.get(i).exibirComoLinha(i + 1));
+        for (int i = 0; i < listaTasks.size(); i++) {
+            System.out.println(listaTasks.get(i).exibirComoLinha(i + 1));
         }
     }
 
@@ -110,15 +110,15 @@ public class TaskManager<T extends Tarefa> {
 
             int idPai = Integer.parseInt(indices[0]);
 
-            if (idPai < 1 || idPai > listaTarefas.size()) {
+            if (idPai < 1 || idPai > listaTasks.size()) {
                 System.out.println("Tarefa não encontrada!");
                 return;
             }
 
-            Tarefa tarefa = listaTarefas.get(idPai - 1);
+            Task task = listaTasks.get(idPai - 1);
 
             if (indices.length == 1) {
-                tarefa.setConcluida(true);
+                task.setConcluida(true);
                 System.out.println("Tarefa concluída com sucesso!");
                 return;
             }
@@ -127,13 +127,13 @@ public class TaskManager<T extends Tarefa> {
                 int idSubtarefa = Integer.parseInt(indices[i]);
 
                 if (idSubtarefa < 1 ||
-                        idSubtarefa > tarefa.getSubtarefas().size()) {
+                        idSubtarefa > task.getSubtarefas().size()) {
                     System.out.println("Subtarefa não encontrada!");
                     return;
                 }
 
-                TarefaPrioritaria subtarefa =
-                        tarefa.getSubtarefas().get(idSubtarefa - 1);
+                TaskPrioritaria subtarefa =
+                        task.getSubtarefas().get(idSubtarefa - 1);
 
                 if (i == indices.length - 1) {
                     subtarefa.setConcluida(true);
@@ -141,7 +141,7 @@ public class TaskManager<T extends Tarefa> {
                     return;
                 }
 
-                tarefa = subtarefa;
+                task = subtarefa;
             }
 
         } catch (NumberFormatException e) {
@@ -166,15 +166,15 @@ public class TaskManager<T extends Tarefa> {
 
             int idPai = Integer.parseInt(indices[0]);
 
-            if (idPai < 1 || idPai > listaTarefas.size()) {
+            if (idPai < 1 || idPai > listaTasks.size()) {
                 System.out.println("Tarefa não encontrada!");
                 return;
             }
 
-            Tarefa tarefa = listaTarefas.get(idPai - 1);
+            Task task = listaTasks.get(idPai - 1);
 
             if (indices.length == 1) {
-                listaTarefas.remove(tarefa);
+                listaTasks.remove(task);
                 System.out.println("Tarefa removida com sucesso!");
                 return;
             }
@@ -183,21 +183,21 @@ public class TaskManager<T extends Tarefa> {
                 int idSubtarefa = Integer.parseInt(indices[i]);
 
                 if (idSubtarefa < 1 ||
-                        idSubtarefa > tarefa.getSubtarefas().size()) {
+                        idSubtarefa > task.getSubtarefas().size()) {
                     System.out.println("Subtarefa não encontrada!");
                     return;
                 }
 
-                TarefaPrioritaria subtarefa =
-                        tarefa.getSubtarefas().get(idSubtarefa - 1);
+                TaskPrioritaria subtarefa =
+                        task.getSubtarefas().get(idSubtarefa - 1);
 
                 if (i == indices.length - 1) {
-                    tarefa.getSubtarefas().remove(subtarefa);
+                    task.getSubtarefas().remove(subtarefa);
                     System.out.println("Subtarefa removida com sucesso!");
                     return;
                 }
 
-                tarefa = subtarefa;
+                task = subtarefa;
             }
 
         } catch (NumberFormatException e) {

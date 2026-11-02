@@ -1,13 +1,12 @@
 package com.capacita.irede.database;
 
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class Conexao {
+public class Connection {
     private static final String URL = "jdbc:mysql:taskmanager.db";
 
-    public static Connection conectar() throws SQLException {
+    public static java.sql.Connection conectar() throws SQLException {
         return DriverManager.getConnection(URL);
     }
 }
